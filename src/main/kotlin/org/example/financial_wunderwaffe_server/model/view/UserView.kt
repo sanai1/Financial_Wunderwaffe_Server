@@ -6,7 +6,7 @@ import java.util.UUID
 data class UserView(
     val uid: UUID,
     val login: String,
-    val password: String
+    var password: String
 ) {
     fun toUserEntity(): UserEntity =
         UserEntity(
