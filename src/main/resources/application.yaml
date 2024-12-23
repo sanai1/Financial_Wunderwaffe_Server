@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: Financial_Wunderwaffe_Server
+  jpa:
+    generate-ddl: true
+  datasource:
+    url: jdbc:mysql://localhost:3306/FinancialWunderwaffeDB
+    username: root
+    password: My7Pass@Word_9_8A_zE
+#logging:
+#  level:
+#    root: debug
