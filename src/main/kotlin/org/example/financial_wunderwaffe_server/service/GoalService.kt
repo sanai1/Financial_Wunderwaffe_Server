@@ -37,8 +37,7 @@ class GoalService (
     }
 
     fun deleteGoalByID(goalID: Long): Boolean {
-        val goal = goalRepository.findByIdOrNull(goalID)
-        return if (goal != null) {
+        return if (goalRepository.findByIdOrNull(goalID) != null) {
             goalRepository.deleteById(goalID)
             true
         } else false

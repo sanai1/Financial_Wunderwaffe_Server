@@ -40,8 +40,7 @@ class TransactionService (
     }
 
     fun deleteTransaction(transactionID: Long): Boolean {
-        val transaction = transactionRepository.findByIdOrNull(transactionID)
-        return if (transaction != null) {
+        return if (transactionRepository.findByIdOrNull(transactionID) != null) {
             transactionRepository.deleteById(transactionID)
             true
         } else false

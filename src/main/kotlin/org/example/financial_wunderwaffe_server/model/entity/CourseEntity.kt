@@ -8,7 +8,7 @@ import org.example.financial_wunderwaffe_server.model.view.CourseView
 data class CourseEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long,
+    val id: Long = 0L,
 
     @ManyToOne
     @JoinColumn(name = "currency_one_id", nullable = false)
