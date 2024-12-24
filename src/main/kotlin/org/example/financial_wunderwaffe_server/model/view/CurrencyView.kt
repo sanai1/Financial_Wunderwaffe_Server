@@ -8,7 +8,13 @@ data class CurrencyView(
 ) {
     fun toCurrencyEntity(): CurrencyEntity =
         CurrencyEntity(
+            token = token
+        )
+
+    fun toCurrencyEntity(id: Long): CurrencyEntity =
+        CurrencyEntity(
             id = id,
             token = token
         )
+
 }

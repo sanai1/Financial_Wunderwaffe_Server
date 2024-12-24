@@ -8,7 +8,7 @@ import org.example.financial_wunderwaffe_server.model.view.CurrencyView
 data class CurrencyEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long,
+    val id: Long = 0L,
 
     @Column(nullable = false, unique = true)
     val token: String,

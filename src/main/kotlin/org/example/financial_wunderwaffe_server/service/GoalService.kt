@@ -21,9 +21,11 @@ class GoalService (
 
     fun createGoal(goalView: GoalView): GoalView? {
         val user = userRepository.findByIdOrNull(goalView.userUID)
-        return if (user != null)
-            goalRepository.save(goalView.toGoalEntity(user)).toGoalView()
-        else null
+        return if (user != null) {
+            if (goalRepository.findGoalByUser(user).get() == null)
+                goalRepository.save(goalView.toGoalEntity(user)).toGoalView()
+            else null
+        } else null
     }
 
     fun updateGoalByID(goalView: GoalView): GoalView? {
