@@ -6,4 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 
 @Repository
-interface BalanceRepository: JpaRepository<BalanceEntity, UserEntity>
+interface BalanceRepository: JpaRepository<BalanceEntity, Long> {
+    fun getAllByUser(user: UserEntity): List<BalanceEntity>
+}

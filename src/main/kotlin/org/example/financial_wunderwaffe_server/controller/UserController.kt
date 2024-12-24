@@ -1,5 +1,6 @@
 package org.example.financial_wunderwaffe_server.controller
 
+import org.example.financial_wunderwaffe_server.model.view.BalanceView
 import org.example.financial_wunderwaffe_server.model.view.UserView
 import org.example.financial_wunderwaffe_server.service.UserService
 import org.springframework.web.bind.annotation.*
@@ -16,7 +17,7 @@ class UserController (
         userService.findUserByLogin(login)
 
     @PostMapping("/register")
-    fun createUser(@RequestBody userView: UserView): UserView =
+    fun createUser(@RequestBody userView: UserView): Pair<UserView, List<BalanceView>> =
         userService.createUser(userView)
 
     @PutMapping("/update")

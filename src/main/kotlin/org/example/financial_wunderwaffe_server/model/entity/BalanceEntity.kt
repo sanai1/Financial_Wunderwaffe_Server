@@ -8,7 +8,7 @@ import org.example.financial_wunderwaffe_server.model.view.BalanceView
 data class BalanceEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long,
+    val id: Long = 0L,
 
     @ManyToOne
     @JoinColumn(nullable = false)

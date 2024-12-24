@@ -13,6 +13,13 @@ data class BalanceView(
 ) {
     fun toBalanceEntity(user: UserEntity, currency: CurrencyEntity): BalanceEntity =
         BalanceEntity(
+            user = user,
+            currency = currency,
+            amount = amount
+        )
+
+    fun toBalanceEntity(id: Long, user: UserEntity, currency: CurrencyEntity): BalanceEntity =
+        BalanceEntity(
             id = id,
             user = user,
             currency = currency,
