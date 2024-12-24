@@ -31,7 +31,7 @@ class TransactionController (
         transactionsService.updateTransaction(transactionView)
 
     @DeleteMapping
-    fun deleteTransactionByID(@RequestParam transactionID: Long) =
+    fun deleteTransactionByID(@RequestParam transactionID: Long): Boolean =
         transactionsService.deleteTransaction(transactionID)
 
 }

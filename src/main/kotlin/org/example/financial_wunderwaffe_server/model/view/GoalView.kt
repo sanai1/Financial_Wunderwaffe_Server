@@ -16,6 +16,17 @@ data class GoalView(
 ) {
     fun toGoalEntity(user: UserEntity): GoalEntity =
         GoalEntity(
+            user = user,
+            name = name,
+            createData = createDate,
+            generalAmount = generalAmount,
+            startAmount = startAmount,
+            deltaPercentage = deltaPercentage,
+            description = description
+        )
+
+    fun toGoalEntity(id: Long, user: UserEntity): GoalEntity =
+        GoalEntity(
             id = id,
             user = user,
             name = name,

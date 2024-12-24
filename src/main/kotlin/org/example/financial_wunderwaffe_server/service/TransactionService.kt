@@ -39,8 +39,12 @@ class TransactionService (
         else null
     }
 
-    // TODO: удаление невозможно проверить не совершив GET
-    fun deleteTransaction(transactionID: Long) =
-        transactionRepository.deleteById(transactionID)
+    fun deleteTransaction(transactionID: Long): Boolean {
+        val transaction = transactionRepository.findByIdOrNull(transactionID)
+        return if (transaction != null) {
+            transactionRepository.deleteById(transactionID)
+            true
+        } else false
+    }
 
 }
