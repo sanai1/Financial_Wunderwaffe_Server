@@ -5,6 +5,7 @@ import org.example.financial_wunderwaffe_server.service.CourseService
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
@@ -23,6 +24,9 @@ class CourseController (
     @PostMapping("/admin/course")
     fun createCourse(@RequestBody courseView: CourseView): CourseView? =
         courseService.createCourse(courseView)
+
+    @PutMapping("/server/course")
+    fun updateCourse() = courseService.checkCourseWithAPI()
 
     @DeleteMapping("/admin/course")
     fun deleteCourse(@RequestParam courseID: Long): Boolean =

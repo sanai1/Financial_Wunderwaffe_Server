@@ -19,7 +19,7 @@ data class CourseEntity(
     val currencyTwo: CurrencyEntity,
 
     @Column(nullable = false)
-    val course: Long
+    var course: Long
 ) {
     fun toCourseView(): CourseView =
         CourseView(

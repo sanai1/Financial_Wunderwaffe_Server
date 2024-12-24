@@ -36,6 +36,7 @@ class SecurityConfiguration (
         httpSecurity.authorizeHttpRequests { httpRequest -> httpRequest
             .requestMatchers("api/v1/user/register").permitAll()
             .requestMatchers("api/v1/admin/**").hasAuthority("ADMIN")
+            .requestMatchers("api/v1/server/**").hasAuthority("SERVER")
             .requestMatchers("api/v1/**").authenticated()
             .anyRequest().denyAll()
         }
