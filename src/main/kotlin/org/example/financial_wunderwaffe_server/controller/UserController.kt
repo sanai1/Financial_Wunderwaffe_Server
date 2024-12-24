@@ -11,11 +11,11 @@ class UserController (
     private val userService: UserService
 ) {
 
-    @GetMapping
-    fun findUserByUID(@RequestParam userUID: UUID): UUID? =
-        userService.findUserByUID(userUID)
+    @GetMapping("/login")
+    fun findUserByUID(@RequestParam login: String): UUID? =
+        userService.findUserByLogin(login)
 
-    @PostMapping
+    @PostMapping("/register")
     fun createUser(@RequestBody userView: UserView): UserView =
         userService.createUser(userView)
 

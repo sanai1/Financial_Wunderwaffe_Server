@@ -16,7 +16,6 @@ data class TransactionView(
 ) {
     fun toTransactionEntity(user: UserEntity, category: CategoryEntity): TransactionEntity =
         TransactionEntity(
-            id = id,
             user = user,
             category = category,
             amount = amount,

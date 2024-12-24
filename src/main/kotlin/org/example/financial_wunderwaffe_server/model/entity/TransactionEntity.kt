@@ -8,7 +8,7 @@ import org.example.financial_wunderwaffe_server.model.view.TransactionView
 data class TransactionEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long,
+    val id: Long = 0L,
 
     @ManyToOne
     @JoinColumn(name = "user_uid", nullable = false)

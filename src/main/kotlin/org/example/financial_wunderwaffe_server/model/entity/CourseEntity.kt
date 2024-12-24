@@ -11,11 +11,11 @@ data class CourseEntity(
     val id: Long,
 
     @ManyToOne
-    @JoinColumn(name = "currency_one", nullable = false)
+    @JoinColumn(name = "currency_one_id", nullable = false)
     val currencyOne: CurrencyEntity,
 
     @ManyToOne
-    @JoinColumn(name = "currency_two", nullable = false)
+    @JoinColumn(name = "currency_two_id", nullable = false)
     val currencyTwo: CurrencyEntity,
 
     @Column(nullable = false)
