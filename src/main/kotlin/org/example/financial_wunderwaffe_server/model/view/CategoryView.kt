@@ -12,6 +12,13 @@ data class CategoryView(
 ) {
     fun toCategoryEntity(user: UserEntity): CategoryEntity =
         CategoryEntity(
+            name = name,
+            type = type,
+            user = user
+        )
+
+    fun toCategoryEntity(id: Long, user: UserEntity): CategoryEntity =
+        CategoryEntity(
             id = id,
             name = name,
             type = type,

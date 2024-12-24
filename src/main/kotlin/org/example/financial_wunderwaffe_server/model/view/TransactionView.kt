@@ -23,4 +23,15 @@ data class TransactionView(
             type = type,
             description = description
         )
+
+    fun toTransactionEntity(id: Long, user: UserEntity, category: CategoryEntity): TransactionEntity =
+        TransactionEntity(
+            id = id,
+            user = user,
+            category = category,
+            amount = amount,
+            date = date,
+            type = type,
+            description = description
+        )
 }

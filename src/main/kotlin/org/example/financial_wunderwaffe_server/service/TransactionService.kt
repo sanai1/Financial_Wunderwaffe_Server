@@ -33,10 +33,13 @@ class TransactionService (
         val category = categoryRepository.findByIdOrNull(transactionView.categoryID)
         val transaction = transactionRepository.findByIdOrNull(transactionView.id)
         return if (user != null && category != null && transaction != null)
-            transactionRepository.save(transactionView.toTransactionEntity(user, category)).toTransactionView()
+            transactionRepository.save(
+                transactionView.toTransactionEntity(transactionView.id, user, category)
+            ).toTransactionView()
         else null
     }
 
+    // TODO: удаление невозможно проверить не совершив GET
     fun deleteTransaction(transactionID: Long) =
         transactionRepository.deleteById(transactionID)
 
