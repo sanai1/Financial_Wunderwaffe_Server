@@ -17,13 +17,16 @@ data class UserEntity(
     val login: String,
 
     @Column(nullable = false)
-    val password: String
+    val password: String,
 
+    @Column(nullable = false)
+    val authority: String
 ) {
     fun toUserView(): UserView =
         UserView(
             uid = uid,
             login = login,
-            password = password
+            password = password,
+            authority = authority
         )
 }
