@@ -6,6 +6,14 @@ plugins {
     id 'org.jetbrains.kotlin.plugin.jpa' version '1.9.25'
 }
 
+jar {
+    manifest {
+        attributes(
+                'Main-Class': 'org.example.financial_wunderwaffe_server.FinancialWunderwaffeServerApplicationKt'
+        )
+    }
+}
+
 group = 'org.example'
 version = '0.0.1-SNAPSHOT'
 
