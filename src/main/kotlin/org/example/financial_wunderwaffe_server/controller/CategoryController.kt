@@ -22,11 +22,14 @@ class CategoryController (
         categoryService.getCategoryByUserUID(userUID)
 
     @PostMapping
-    fun createCategory(@RequestBody categoryView: CategoryView): CategoryView? =
+    fun createCategory(@RequestBody categoryView: CategoryView): Long =
         categoryService.createCategory(categoryView)
 
     @PutMapping
-    fun updateCategory(@RequestBody categoryView: CategoryView): CategoryView? =
-        categoryService.updateCategory(categoryView)
+    fun updateCategory(
+        @RequestParam categoryID: Long,
+        @RequestParam name: String
+    ): Boolean =
+        categoryService.updateCategory(categoryID, name)
 
 }

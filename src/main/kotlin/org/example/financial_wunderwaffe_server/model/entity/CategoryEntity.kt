@@ -11,7 +11,7 @@ data class CategoryEntity(
     val id: Long = 0L,
 
     @Column(nullable = false)
-    val name: String,
+    var name: String,
 
     @Column(nullable = false)
     val type: Boolean,

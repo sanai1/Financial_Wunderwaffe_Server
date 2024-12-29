@@ -20,23 +20,23 @@ class TransactionService (
             userRepository.findById(userUID).get()
         ).map { it.toTransactionView() }
 
-    fun createTransaction(transactionView: TransactionView): TransactionView? {
+    fun createTransaction(transactionView: TransactionView): Long {
         val user = userRepository.findByIdOrNull(transactionView.userUID)
         val category = categoryRepository.findByIdOrNull(transactionView.categoryID)
         return if (user != null && category != null)
-            transactionRepository.save(transactionView.toTransactionEntity(user, category)).toTransactionView()
-        else null
+            transactionRepository.save(transactionView.toTransactionEntity(user, category)).id
+        else 0
     }
 
-    fun updateTransaction(transactionView: TransactionView): TransactionView? {
+    fun updateTransaction(transactionView: TransactionView): Boolean {
         val user = userRepository.findByIdOrNull(transactionView.userUID)
         val category = categoryRepository.findByIdOrNull(transactionView.categoryID)
         val transaction = transactionRepository.findByIdOrNull(transactionView.id)
-        return if (user != null && category != null && transaction != null)
+        return if (user != null && category != null && transaction != null) {
             transactionRepository.save(
-                transactionView.toTransactionEntity(transactionView.id, user, category)
-            ).toTransactionView()
-        else null
+                transactionView.toTransactionEntity(transactionView.id, user, category))
+            true
+        } else false
     }
 
     fun deleteTransaction(transactionID: Long): Boolean {

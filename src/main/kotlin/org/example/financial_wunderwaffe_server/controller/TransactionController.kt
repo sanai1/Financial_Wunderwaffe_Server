@@ -23,11 +23,11 @@ class TransactionController (
         transactionsService.getTransactionsByUserUID(userUID)
 
     @PostMapping
-    fun createTransaction(@RequestBody transactionView: TransactionView): TransactionView? =
+    fun createTransaction(@RequestBody transactionView: TransactionView): Long =
         transactionsService.createTransaction(transactionView)
 
     @PutMapping
-    fun updateTransactionByID(@RequestBody transactionView: TransactionView): TransactionView? =
+    fun updateTransactionByID(@RequestBody transactionView: TransactionView): Boolean =
         transactionsService.updateTransaction(transactionView)
 
     @DeleteMapping

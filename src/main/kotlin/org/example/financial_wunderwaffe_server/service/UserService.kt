@@ -1,7 +1,6 @@
 package org.example.financial_wunderwaffe_server.service
 
 import org.example.financial_wunderwaffe_server.model.repository.UserRepository
-import org.example.financial_wunderwaffe_server.model.view.BalanceView
 import org.example.financial_wunderwaffe_server.model.view.UserView
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
@@ -17,10 +16,11 @@ class UserService (
     fun findUserByLogin(login: String): UUID? =
         userRepository.findByLogin(login).map { it.uid }.orElseGet { null }
 
-    fun createUser(userView: UserView): Pair<UserView, List<BalanceView>> {
+    fun createUser(userView: UserView): Boolean {
         userView.password = getEncoder().encode(userView.password)
         val user = userRepository.save(userView.toUserEntity())
-        return Pair(user.toUserView(), balanceService.createBalanceForNewUser(user))
+        balanceService.createBalanceForNewUser(user)
+        return true
     }
 
     fun updateUser(userView: UserView): UserView =

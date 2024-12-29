@@ -18,20 +18,19 @@ class CategoryService (
             userRepository.findById(userUID).get()
         ).map { it.toCategoryView() }
 
-    fun createCategory(categoryView: CategoryView): CategoryView? {
+    fun createCategory(categoryView: CategoryView): Long {
         val user = userRepository.findByIdOrNull(categoryView.userUID)
-        return if (user != null) categoryRepository.save(categoryView.toCategoryEntity(user)).toCategoryView()
-        else null
+        return if (user != null) categoryRepository.save(categoryView.toCategoryEntity(user)).id
+        else 0
     }
 
-    fun updateCategory(categoryView: CategoryView): CategoryView? {
-        val user = userRepository.findByIdOrNull(categoryView.userUID)
-        val category = categoryRepository.findByIdOrNull(categoryView.id)
-        return if (user != null && category != null)
-            categoryRepository.save(
-                categoryView.toCategoryEntity(categoryView.id, user)
-            ).toCategoryView()
-        else null
+    fun updateCategory(categoryID: Long, name: String): Boolean {
+        val category = categoryRepository.findByIdOrNull(categoryID)
+        return if (category != null) {
+            category.name = name
+            categoryRepository.save(category)
+            true
+        } else false
     }
 
 }
