@@ -7,6 +7,6 @@ spring:
     url: jdbc:mysql://localhost:3306/Financial_Wunderwaffe_DataBase
     username: root
     password: My7Pass@Word_9_8A_zE
-logging:
-  level:
-    root: debug
+#logging:
+#  level:
+#    root: debug

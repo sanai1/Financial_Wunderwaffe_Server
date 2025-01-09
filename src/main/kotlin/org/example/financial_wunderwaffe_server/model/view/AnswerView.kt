@@ -6,7 +6,7 @@ import org.example.financial_wunderwaffe_server.model.entity.QuestionEntity
 data class AnswerView(
     val id: Long,
     val text: String,
-    val questionID: Long
+    var questionID: Long = 0L
 ) {
     fun toAnswerEntity(question: QuestionEntity): AnswerEntity =
         AnswerEntity(

@@ -12,11 +12,6 @@ class AnswerService(
     val questionRepository: QuestionRepository
 ) {
 
-    fun findAllAnswers(): List<AnswerView> =
-        answerRepository.findAll().map {
-            it.toAnswerView()
-        }
-
     fun findAnswersByQuestionId(questionId: Long): List<AnswerView> {
         val question = questionRepository.findByIdOrNull(questionId)
         return if (question != null) {

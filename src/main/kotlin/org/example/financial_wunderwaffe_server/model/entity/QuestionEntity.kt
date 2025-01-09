@@ -6,6 +6,7 @@ import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.Table
+import org.example.financial_wunderwaffe_server.model.view.AnswerView
 import org.example.financial_wunderwaffe_server.model.view.QuestionView
 
 @Entity
@@ -21,10 +22,11 @@ data class QuestionEntity(
     @Column(nullable = false)
     var isEnabled: Boolean
 )  {
-    fun toQuestionView(): QuestionView =
+    fun toQuestionView(listAnswers: List<AnswerView>): QuestionView =
         QuestionView(
             id = id,
             text = text,
-            isEnabled = isEnabled
+            isEnabled = isEnabled,
+            listAnswers = listAnswers
         )
 }

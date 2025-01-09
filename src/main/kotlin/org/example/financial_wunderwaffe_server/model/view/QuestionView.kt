@@ -5,7 +5,8 @@ import org.example.financial_wunderwaffe_server.model.entity.QuestionEntity
 data class QuestionView(
     val id: Long,
     val text: String,
-    val isEnabled: Boolean
+    val isEnabled: Boolean,
+    val listAnswers: List<AnswerView>
 ) {
     fun toQuestionEntity(): QuestionEntity =
         QuestionEntity(

@@ -7,20 +7,42 @@ import org.springframework.stereotype.Service
 
 @Service
 class QuestionService(
-    private val questionRepository: QuestionRepository
+    private val questionRepository: QuestionRepository,
+    private val answerService: AnswerService
 ) {
 
     fun findAllQuestions(): List<QuestionView> =
         questionRepository.findAll().map {
-            it.toQuestionView()
+            it.toQuestionView(
+                answerService.findAnswersByQuestionId(it.id)
+            )
         }
 
-    fun createQuestion(questionView: QuestionView): Long =
-        questionRepository.save(questionView.toQuestionEntity()).id
+    fun createQuestion(questionView: QuestionView): Long {
+        val id = questionRepository.save(questionView.toQuestionEntity()).id
+        questionView.listAnswers.forEach {
+            it.questionID = id
+            answerService.createAnswer(it)
+        }
+        return id
+    }
 
     fun updateQuestionById(questionView: QuestionView): Boolean {
         val question = questionRepository.findByIdOrNull(questionView.id)
         return if (question != null) {
+            val answers = answerService.findAnswersByQuestionId(question.id)
+            for (answer in questionView.listAnswers) {
+                var checkID = false
+                answers.forEach {
+                    if (it.id == answer.id) checkID = true
+                }
+                if (!checkID) {
+                    return false
+                }
+            }
+            questionView.listAnswers.forEach {
+                answerService.updateAnswer(it)
+            }
             questionRepository.save(questionView.toQuestionEntity(questionView.id))
             true
         } else false
