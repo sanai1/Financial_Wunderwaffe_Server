@@ -1,5 +1,6 @@
 package org.example.financial_wunderwaffe_server.service
 
+import org.example.financial_wunderwaffe_server.model.entity.UserAnswerEntity
 import org.example.financial_wunderwaffe_server.model.repository.AnswerRepository
 import org.example.financial_wunderwaffe_server.model.repository.QuestionRepository
 import org.example.financial_wunderwaffe_server.model.repository.UserAnswerRepository
@@ -37,12 +38,19 @@ class UserAnswerService(
         }
 
     fun updateUserAnswers(listUserAnswers: List<UserAnswerView>): Boolean {
+        val listForSave = mutableListOf<UserAnswerEntity>()
         listUserAnswers.map {
             val userAnswer = userAnswerRepository.findByIdOrNull(it.id)
-            if (userAnswer != null) {
-                it.toUserAnswerEntity(userAnswer.id, userAnswer.user, userAnswer.question, userAnswer.answer)
+            val user = userRepository.findByIdOrNull(it.userUID)
+            val question = questionRepository.findByIdOrNull(it.questionID)
+            val answer = answerRepository.findByIdOrNull(it.answerID)
+            if (userAnswer != null && user != null && question != null && answer != null) {
+                listForSave.add(
+                    it.toUserAnswerEntity(userAnswer.id, user, question, answer)
+                )
             } else return false
-        }.map {
+        }
+        listForSave.forEach {
             userAnswerRepository.save(it)
         }
         return true
