@@ -3,6 +3,7 @@ package org.example.financial_wunderwaffe_server.model.entity
 import jakarta.persistence.*
 import org.example.financial_wunderwaffe_server.model.view.CalculationShareOfAssetView
 import org.example.financial_wunderwaffe_server.model.view.ShareOfAssetView
+import java.time.LocalDate
 
 @Entity
 @Table(name = "calculation_share_of_asset")
@@ -16,7 +17,7 @@ data class CalculationShareOfAssetEntity(
     val user: UserEntity,
 
     @Column(nullable = false)
-    val date: String
+    val date: LocalDate
 ) {
     fun toCalculationShareOfAssetView(listShareOfAsset: List<ShareOfAssetView>): CalculationShareOfAssetView =
         CalculationShareOfAssetView(
