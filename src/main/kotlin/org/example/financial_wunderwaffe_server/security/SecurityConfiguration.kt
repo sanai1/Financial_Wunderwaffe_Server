@@ -1,6 +1,6 @@
 package org.example.financial_wunderwaffe_server.security
 
-import org.example.financial_wunderwaffe_server.model.repository.UserRepository
+import org.example.financial_wunderwaffe_server.database.repository.UserRepository
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.authentication.AuthenticationProvider

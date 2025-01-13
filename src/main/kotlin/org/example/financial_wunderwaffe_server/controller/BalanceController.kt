@@ -1,7 +1,7 @@
 package org.example.financial_wunderwaffe_server.controller
 
-import org.example.financial_wunderwaffe_server.model.view.BalanceView
-import org.example.financial_wunderwaffe_server.service.BalanceService
+import org.example.financial_wunderwaffe_server.model.request.BalanceView
+import org.example.financial_wunderwaffe_server.service.implementation.BalanceService
 import org.springframework.web.bind.annotation.*
 import java.util.UUID
 

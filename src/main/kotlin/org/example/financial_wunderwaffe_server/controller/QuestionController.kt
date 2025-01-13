@@ -1,7 +1,7 @@
 package org.example.financial_wunderwaffe_server.controller
 
-import org.example.financial_wunderwaffe_server.model.view.QuestionView
-import org.example.financial_wunderwaffe_server.service.QuestionService
+import org.example.financial_wunderwaffe_server.model.request.QuestionView
+import org.example.financial_wunderwaffe_server.service.implementation.QuestionService
 import org.springframework.web.bind.annotation.*
 
 @RestController

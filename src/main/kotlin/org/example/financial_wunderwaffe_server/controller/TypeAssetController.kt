@@ -1,7 +1,7 @@
 package org.example.financial_wunderwaffe_server.controller
 
-import org.example.financial_wunderwaffe_server.model.view.TypeAssetView
-import org.example.financial_wunderwaffe_server.service.TypeAssetsService
+import org.example.financial_wunderwaffe_server.model.request.TypeAssetView
+import org.example.financial_wunderwaffe_server.service.implementation.TypeAssetsService
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping

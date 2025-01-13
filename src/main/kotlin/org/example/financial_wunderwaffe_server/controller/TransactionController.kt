@@ -1,7 +1,7 @@
 package org.example.financial_wunderwaffe_server.controller
 
-import org.example.financial_wunderwaffe_server.model.view.TransactionView
-import org.example.financial_wunderwaffe_server.service.TransactionService
+import org.example.financial_wunderwaffe_server.model.request.TransactionView
+import org.example.financial_wunderwaffe_server.service.implementation.TransactionService
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping

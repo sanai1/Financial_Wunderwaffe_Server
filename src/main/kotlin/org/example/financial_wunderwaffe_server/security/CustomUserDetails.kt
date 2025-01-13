@@ -1,6 +1,6 @@
 package org.example.financial_wunderwaffe_server.security
 
-import org.example.financial_wunderwaffe_server.model.entity.UserEntity
+import org.example.financial_wunderwaffe_server.database.entity.UserEntity
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails

@@ -1,7 +1,7 @@
 package org.example.financial_wunderwaffe_server.controller
 
-import org.example.financial_wunderwaffe_server.model.view.CurrencyView
-import org.example.financial_wunderwaffe_server.service.CurrencyService
+import org.example.financial_wunderwaffe_server.model.request.CurrencyView
+import org.example.financial_wunderwaffe_server.service.implementation.CurrencyService
 import org.springframework.web.bind.annotation.*
 
 @RestController
