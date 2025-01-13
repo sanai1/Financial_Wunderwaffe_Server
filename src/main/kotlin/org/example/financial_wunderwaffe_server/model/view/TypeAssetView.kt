@@ -5,8 +5,8 @@ import org.example.financial_wunderwaffe_server.model.entity.TypeAssetEntity
 data class TypeAssetView(
     val id: Long,
     val name: String,
-    val description: String
+    val color: List<Int>
 ) {
     fun toTypeAssetEntity(): TypeAssetEntity =
-        TypeAssetEntity(id, name, description)
+        TypeAssetEntity(id, name, color)
 }

@@ -13,9 +13,9 @@ data class TypeAssetEntity(
     @Column(unique = true, nullable = false)
     val name: String,
 
-    @Column
-    val description: String
+    @ElementCollection
+    val color: List<Int>
 ) {
     fun toTypeAssetView(): TypeAssetView =
-        TypeAssetView(id, name, description)
+        TypeAssetView(id, name, color)
 }
