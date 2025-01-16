@@ -33,7 +33,7 @@ class PythonService (
             )
             listPercentage.forEach {
                 val typeAssetEntity = typeAssetRepository.findById(it.typeAssetID).getOrNull()
-                if (typeAssetEntity == null)
+                if (typeAssetEntity == null) {
                     ResponseTemplate(
                         status = Status(
                             code = 500,
@@ -41,13 +41,15 @@ class PythonService (
                         ),
                         data = null
                     )
-                listShareOfAssetEntity.add(
-                    ShareOfAssetEntity(
-                        calculationShareOfAsset = calculationShareOfAssetEntity,
-                        typeAsset = typeAssetEntity!!,
-                        share = it.share
+                } else {
+                    listShareOfAssetEntity.add(
+                        ShareOfAssetEntity(
+                            calculationShareOfAsset = calculationShareOfAssetEntity,
+                            typeAsset = typeAssetEntity,
+                            share = it.share
+                        )
                     )
-                )
+                }
             }
             calculationShareOfAssetRepository.save(calculationShareOfAssetEntity)
             listShareOfAssetEntity.forEach {

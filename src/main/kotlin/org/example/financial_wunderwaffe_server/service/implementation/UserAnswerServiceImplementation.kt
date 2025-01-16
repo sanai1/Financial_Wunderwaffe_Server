@@ -6,27 +6,28 @@ import org.example.financial_wunderwaffe_server.database.repository.QuestionRepo
 import org.example.financial_wunderwaffe_server.database.repository.UserAnswerRepository
 import org.example.financial_wunderwaffe_server.database.repository.UserRepository
 import org.example.financial_wunderwaffe_server.model.request.UserAnswerView
+import org.example.financial_wunderwaffe_server.service.UserAnswerService
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import java.util.UUID
 
 @Service
-class UserAnswerService(
+class UserAnswerServiceImplementation (
     private val userAnswerRepository: UserAnswerRepository,
     private val userRepository: UserRepository,
     private val questionRepository: QuestionRepository,
     private val answerRepository: AnswerRepository
-) {
+): UserAnswerService {
 
-    fun getAllUserAnswerByUserUID(userUID: UUID): List<UserAnswerView> =
+    override fun findByUserUID(userUID: UUID): List<UserAnswerView> =
         userAnswerRepository.findAllByUser(
             userRepository.findById(userUID).get()
         ).map {
             it.toUserAnswerView()
         }
 
-    fun createUserAnswers(listUserAnswers: List<UserAnswerView>): List<Long> =
-        listUserAnswers.map {
+    override fun create(listUserAnswerView: List<UserAnswerView>): List<Long> =
+        listUserAnswerView.map {
             val user = userRepository.findByIdOrNull(it.userUID)
             val question = questionRepository.findByIdOrNull(it.questionID)
             val answer = answerRepository.findByIdOrNull(it.answerID)
@@ -37,9 +38,9 @@ class UserAnswerService(
             userAnswerRepository.save(it).id
         }
 
-    fun updateUserAnswers(listUserAnswers: List<UserAnswerView>): Boolean {
+    override fun update(listUserAnswerView: List<UserAnswerView>): Boolean {
         val listForSave = mutableListOf<UserAnswerEntity>()
-        listUserAnswers.map {
+        listUserAnswerView.map {
             val userAnswer = userAnswerRepository.findByIdOrNull(it.id)
             val user = userRepository.findByIdOrNull(it.userUID)
             val question = questionRepository.findByIdOrNull(it.questionID)

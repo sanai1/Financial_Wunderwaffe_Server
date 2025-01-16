@@ -1,7 +1,7 @@
 package org.example.financial_wunderwaffe_server.controller
 
 import org.example.financial_wunderwaffe_server.model.request.UserAnswerView
-import org.example.financial_wunderwaffe_server.service.implementation.UserAnswerService
+import org.example.financial_wunderwaffe_server.service.UserAnswerService
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
@@ -16,17 +16,12 @@ import java.util.UUID
 class UserAnswerController(
     private val userAnswerService: UserAnswerService
 ) {
-
     @GetMapping
-    fun getAllUserAnswersByUserUID(@RequestParam userUID: UUID): List<UserAnswerView> =
-        userAnswerService.getAllUserAnswerByUserUID(userUID)
+    fun getAllUserAnswersByUserUID(@RequestParam userUID: UUID) = userAnswerService.findByUserUID(userUID)
 
     @PostMapping
-    fun createUserAnswers(@RequestBody listUserAnswersView: List<UserAnswerView>): List<Long> =
-        userAnswerService.createUserAnswers(listUserAnswersView)
+    fun createUserAnswers(@RequestBody listUserAnswersView: List<UserAnswerView>) = userAnswerService.create(listUserAnswersView)
 
     @PutMapping
-    fun updateUserAnswers(@RequestBody listUserAnswersView: List<UserAnswerView>): Boolean =
-        userAnswerService.updateUserAnswers(listUserAnswersView)
-
+    fun updateUserAnswers(@RequestBody listUserAnswersView: List<UserAnswerView>) = userAnswerService.update(listUserAnswersView)
 }

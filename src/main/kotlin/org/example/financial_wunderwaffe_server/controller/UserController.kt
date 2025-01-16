@@ -1,27 +1,20 @@
 package org.example.financial_wunderwaffe_server.controller
 
 import org.example.financial_wunderwaffe_server.model.request.UserView
-import org.example.financial_wunderwaffe_server.service.implementation.UserService
+import org.example.financial_wunderwaffe_server.service.UserService
 import org.springframework.web.bind.annotation.*
-import java.util.UUID
 
 @RestController
 @RequestMapping("api/v1/user")
 class UserController (
     private val userService: UserService
 ) {
-
     @GetMapping("/login")
-    fun findUserByUID(@RequestParam login: String): UUID? =
-        userService.findUserByLogin(login)
+    fun findUserByUID(@RequestParam login: String) = userService.findByLogin(login)
 
     @PostMapping("/register")
-    fun createUser(@RequestBody userView: UserView): Boolean =
-        userService.createUser(userView)
+    fun createUser(@RequestBody userView: UserView) = userService.create(userView)
 
-    // запрос требует изменений (пока не трогаем)
     @PutMapping("/update")
-    fun updateUserByUID(@RequestBody userView: UserView): UserView =
-        userService.updateUser(userView)
-
+    fun updateUserByUID(@RequestBody userView: UserView) = userService.update(userView)
 }

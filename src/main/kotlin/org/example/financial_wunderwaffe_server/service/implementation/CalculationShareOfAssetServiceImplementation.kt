@@ -7,20 +7,21 @@ import org.example.financial_wunderwaffe_server.database.repository.ShareOfAsset
 import org.example.financial_wunderwaffe_server.database.repository.UserAnswerRepository
 import org.example.financial_wunderwaffe_server.database.repository.UserRepository
 import org.example.financial_wunderwaffe_server.model.request.CalculationShareOfAssetView
+import org.example.financial_wunderwaffe_server.service.CalculationShareOfAssetService
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import java.util.UUID
 
 @Service
-class CalculationShareOfAssetService(
+class CalculationShareOfAssetServiceImplementation (
     private val calculationShareOfAssetRepository: CalculationShareOfAssetRepository,
     private val shareOfAssetRepository: ShareOfAssetRepository,
     private val userRepository: UserRepository,
     private val userAnswerRepository: UserAnswerRepository,
     private val pythonService: PythonService
-) {
+): CalculationShareOfAssetService {
 
-    fun getCalculationShareOfAssetsByUserUID(userUID: UUID): ResponseTemplate<CalculationShareOfAssetView> {
+    override fun findByUserUID(userUID: UUID): ResponseTemplate<CalculationShareOfAssetView> {
         val user = userRepository.findByIdOrNull(userUID) // получение пользователя по которому будет все выполняться
         return if (user != null) {
             val questionnaire = userAnswerRepository.findAllByUser(user) // получение анкеты пользователя

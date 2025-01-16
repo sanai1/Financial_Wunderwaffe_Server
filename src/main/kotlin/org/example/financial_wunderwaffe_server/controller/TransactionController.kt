@@ -1,7 +1,7 @@
 package org.example.financial_wunderwaffe_server.controller
 
 import org.example.financial_wunderwaffe_server.model.request.TransactionView
-import org.example.financial_wunderwaffe_server.service.implementation.TransactionService
+import org.example.financial_wunderwaffe_server.service.TransactionService
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
@@ -17,21 +17,15 @@ import java.util.UUID
 class TransactionController (
     private val transactionsService: TransactionService
 ) {
-
     @GetMapping
-    fun getTransactionsByUserUID(@RequestParam userUID: UUID): List<TransactionView> =
-        transactionsService.getTransactionsByUserUID(userUID)
+    fun getTransactionsByUserUID(@RequestParam userUID: UUID) = transactionsService.findByUserUID(userUID)
 
     @PostMapping
-    fun createTransaction(@RequestBody transactionView: TransactionView): Long =
-        transactionsService.createTransaction(transactionView)
+    fun createTransaction(@RequestBody transactionView: TransactionView) = transactionsService.create(transactionView)
 
     @PutMapping
-    fun updateTransactionByID(@RequestBody transactionView: TransactionView): Boolean =
-        transactionsService.updateTransaction(transactionView)
+    fun updateTransactionByID(@RequestBody transactionView: TransactionView) = transactionsService.update(transactionView)
 
     @DeleteMapping
-    fun deleteTransactionByID(@RequestParam transactionID: Long): Boolean =
-        transactionsService.deleteTransaction(transactionID)
-
+    fun deleteTransactionByID(@RequestParam transactionID: Long) = transactionsService.delete(transactionID)
 }

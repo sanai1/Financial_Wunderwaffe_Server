@@ -1,7 +1,7 @@
 package org.example.financial_wunderwaffe_server.controller
 
 import org.example.financial_wunderwaffe_server.model.request.QuestionView
-import org.example.financial_wunderwaffe_server.service.implementation.QuestionService
+import org.example.financial_wunderwaffe_server.service.QuestionService
 import org.springframework.web.bind.annotation.*
 
 @RestController
@@ -9,21 +9,15 @@ import org.springframework.web.bind.annotation.*
 class QuestionController(
     private val questionService: QuestionService
 ) {
-
     @GetMapping("/question")
-    fun getAllQuestions(): List<QuestionView> =
-        questionService.findAllQuestions()
+    fun getAllQuestions() = questionService.findAll()
 
     @PostMapping("/admin/question")
-    fun createQuestion(@RequestBody question: QuestionView): Long =
-        questionService.createQuestion(question)
+    fun createQuestion(@RequestBody question: QuestionView) = questionService.create(question)
 
     @PutMapping("/admin/question")
-    fun updateQuestionById(@RequestBody question: QuestionView): Boolean =
-        questionService.updateQuestionById(question)
+    fun updateQuestionById(@RequestBody question: QuestionView) = questionService.update(question)
 
     @DeleteMapping("/admin/question")
-    fun deleteQuestionById(@RequestParam questionId: Long): Boolean =
-        questionService.deleteQuestionById(questionId)
-
+    fun deleteQuestionById(@RequestParam questionId: Long) = questionService.delete(questionId)
 }

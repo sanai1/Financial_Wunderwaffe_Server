@@ -2,35 +2,37 @@ package org.example.financial_wunderwaffe_server.service.implementation
 
 import org.example.financial_wunderwaffe_server.database.repository.QuestionRepository
 import org.example.financial_wunderwaffe_server.model.request.QuestionView
+import org.example.financial_wunderwaffe_server.service.AnswerService
+import org.example.financial_wunderwaffe_server.service.QuestionService
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 
 @Service
-class QuestionService(
+class QuestionServiceImplementation (
     private val questionRepository: QuestionRepository,
     private val answerService: AnswerService
-) {
+): QuestionService {
 
-    fun findAllQuestions(): List<QuestionView> =
+    override fun findAll(): List<QuestionView> =
         questionRepository.findAll().map {
             it.toQuestionView(
-                answerService.findAnswersByQuestionId(it.id)
+                answerService.findByQuestionID(it.id)
             )
         }
 
-    fun createQuestion(questionView: QuestionView): Long {
+    override fun create(questionView: QuestionView): Long {
         val id = questionRepository.save(questionView.toQuestionEntity()).id
         questionView.listAnswers.forEach {
             it.questionID = id
-            answerService.createAnswer(it)
+            answerService.create(it)
         }
         return id
     }
 
-    fun updateQuestionById(questionView: QuestionView): Boolean {
+    override fun update(questionView: QuestionView): Boolean {
         val question = questionRepository.findByIdOrNull(questionView.id)
         return if (question != null) {
-            val answers = answerService.findAnswersByQuestionId(question.id)
+            val answers = answerService.findByQuestionID(question.id)
             for (answer in questionView.listAnswers) {
                 var checkID = false
                 answers.forEach {
@@ -41,15 +43,15 @@ class QuestionService(
                 }
             }
             questionView.listAnswers.forEach {
-                answerService.updateAnswer(it)
+                answerService.update(it)
             }
             questionRepository.save(questionView.toQuestionEntity(questionView.id))
             true
         } else false
     }
 
-    fun deleteQuestionById(questionId: Long): Boolean {
-        val question = questionRepository.findByIdOrNull(questionId)
+    override fun delete(questionID: Long): Boolean {
+        val question = questionRepository.findByIdOrNull(questionID)
         return if (question != null) {
             question.isEnabled = false
             questionRepository.save(question)
