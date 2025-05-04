@@ -6,7 +6,10 @@ import org.example.financial_wunderwaffe_server.database.repository.AssetTransac
 import org.example.financial_wunderwaffe_server.model.request.AssetInformationView
 import org.example.financial_wunderwaffe_server.model.request.AssetPriceView
 import org.example.financial_wunderwaffe_server.model.request.AssetTransactionView
+import org.example.financial_wunderwaffe_server.model.request.TransactionView
 import org.example.financial_wunderwaffe_server.service.AssetInformationService
+import org.example.financial_wunderwaffe_server.service.CategoryService
+import org.example.financial_wunderwaffe_server.service.TransactionService
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import java.text.SimpleDateFormat
@@ -17,6 +20,8 @@ class AssetInformationServiceImplementation(
     private val assetRepository: AssetRepository,
     private val assetPriceRepository: AssetPriceRepository,
     private val assetTransactionRepository: AssetTransactionRepository,
+    private val transactionService: TransactionService,
+    private val categoryService: CategoryService,
 ) : AssetInformationService {
     override fun createAssetPrice(assetPriceView: AssetPriceView): Long {
         val asset = assetRepository.findByIdOrNull(assetPriceView.assetID)
@@ -26,8 +31,28 @@ class AssetInformationServiceImplementation(
 
     override fun createAssetTransaction(assetTransactionView: AssetTransactionView): Long {
         val asset = assetRepository.findByIdOrNull(assetTransactionView.assetID)
-        return if (asset != null) assetTransactionRepository.save(assetTransactionView.toAssetTransactionEntity(asset)).id
-        else 0L
+        return if (asset != null) {
+            assetTransactionRepository.save(assetTransactionView.toAssetTransactionEntity(asset)).id
+            transactionService.create(
+                TransactionView(
+                    id = assetTransactionView.id,
+                    userUID = asset.user.uid,
+                    categoryID = categoryService.findByUserUID(asset.user.uid).first {
+                        when (assetTransactionView.isSale) {
+                            true -> it.name == "Продажа актива"
+                            false -> it.name == "Покупка актива"
+                        }
+                    }.id,
+                    amount = assetTransactionView.amount,
+                    date = assetTransactionView.date,
+                    type = assetTransactionView.isSale,
+                    description = when (assetTransactionView.isSale) {
+                        true -> "Продажа актива: ${asset.title}"
+                        false -> "Покупка актива: ${asset.title}"
+                    }
+                )
+            )
+        } else 0L
     }
 
     override fun findAssetInformationByAsset(assetId: Long): List<AssetInformationView> {
