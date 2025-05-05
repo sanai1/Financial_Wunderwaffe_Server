@@ -8,7 +8,7 @@ data class BudgetAnalyticsView(
         val id: Long,
         val title: String,
         val isIncome: Boolean,
-        val isLarge: Boolean,
-        val amount: Long,
+        val amountLarge: Long,
+        val amountUsual: Long,
     )
 }

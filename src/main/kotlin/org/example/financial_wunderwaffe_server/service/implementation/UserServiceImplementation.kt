@@ -1,8 +1,10 @@
 package org.example.financial_wunderwaffe_server.service.implementation
 
 import org.example.financial_wunderwaffe_server.database.repository.UserRepository
+import org.example.financial_wunderwaffe_server.model.request.AssetView
 import org.example.financial_wunderwaffe_server.model.request.CategoryView
 import org.example.financial_wunderwaffe_server.model.request.UserView
+import org.example.financial_wunderwaffe_server.service.AssetService
 import org.example.financial_wunderwaffe_server.service.CategoryService
 import org.example.financial_wunderwaffe_server.service.UserService
 import org.springframework.data.repository.findByIdOrNull
@@ -15,6 +17,7 @@ import java.util.*
 class UserServiceImplementation(
     private val userRepository: UserRepository,
     private val categoryService: CategoryService,
+    private val assetService: AssetService,
 ) : UserService {
 
     override fun findByLogin(login: String): UUID =
@@ -37,6 +40,14 @@ class UserServiceImplementation(
                 name = "Покупка актива",
                 type = false,
                 userUID = user.uid
+            )
+        )
+        assetService.create(
+            AssetView(
+                id = 0L,
+                userUID = user.uid,
+                title = "Фиат",
+                amount = 0L
             )
         )
 //        balanceService.createBalanceForNewUser(user)

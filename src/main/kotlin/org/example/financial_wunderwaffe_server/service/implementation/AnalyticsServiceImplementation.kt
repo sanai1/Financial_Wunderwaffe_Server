@@ -3,10 +3,12 @@ package org.example.financial_wunderwaffe_server.service.implementation
 import org.example.financial_wunderwaffe_server.model.request.AssetInformationView
 import org.example.financial_wunderwaffe_server.model.request.BudgetAnalyticsView
 import org.example.financial_wunderwaffe_server.model.request.CapitalAnalyticsView
+import org.example.financial_wunderwaffe_server.model.request.TransactionView
 import org.example.financial_wunderwaffe_server.service.*
 import org.springframework.stereotype.Service
 import java.text.SimpleDateFormat
 import java.time.LocalDate
+import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 import java.util.*
 
@@ -22,91 +24,185 @@ class AnalyticsServiceImplementation(
         val listBudgetAnalyticsView = mutableListOf<BudgetAnalyticsView>()
         val categories = categoriesService.findByUserUID(userUID)
         transactions.forEach { entryByMonth ->
-            entryByMonth.value.forEach { entryByCategory ->
-                val category = categories.find { it.id == entryByCategory.key } ?: return@forEach
-                listBudgetAnalyticsView.add(
-                    BudgetAnalyticsView(
-                        month = entryByMonth.key,
-                        listCategory = entryByCategory.value.map {
-                            BudgetAnalyticsView.CategoryAnalyticsView(
-                                id = entryByCategory.key,
-                                title = category.name,
-                                isIncome = category.type,
-                                isLarge = it.type,
-                                amount = it.amount
-                            )
+            listBudgetAnalyticsView.add(
+                BudgetAnalyticsView(
+                    month = entryByMonth.key,
+                    listCategory = entryByMonth.value.map { category ->
+                        val categoryView = categories.find { it.id == category.key }!!
+                        var amountLarge = 0L
+                        var amountUsual = 0L
+                        category.value.forEach { transaction ->
+                            if (transaction.type) amountLarge += transaction.amount
+                            else amountUsual += transaction.amount
                         }
-                    ))
-            }
+                        BudgetAnalyticsView.CategoryAnalyticsView(
+                            id = category.key,
+                            title = categoryView.name,
+                            isIncome = categoryView.type,
+                            amountLarge = amountLarge,
+                            amountUsual = amountUsual
+                        )
+                    }
+                )
+            )
         }
         return listBudgetAnalyticsView
     }
 
     override fun getCapitalByMonth(userUID: UUID): List<CapitalAnalyticsView> {
         val assets = assetService.findByUserUID(userUID)
+        val categories = categoriesService.findByUserUID(userUID)
         val listAssetInformation = mutableListOf<AssetInformationView>()
         assets.forEach { asset ->
             assetInformationService.findAssetInformationByAsset(asset.id).forEach { assetInformationView ->
                 listAssetInformation.add(assetInformationView)
             }
         }
-        val groupListAssetInformation = listAssetInformation.groupBy { assetInformation ->
-            SimpleDateFormat("MM.yyyy", Locale.getDefault()).format(
-                SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).parse(assetInformation.date)
-            )
-        }.mapValues { entry ->
-            entry.value.groupBy { assetInformation ->
-                assetInformation.assetId
-            }
-        }
-        val transactionsBudget = getGroupTransactions(userUID).mapValues { group ->
-            group.value.mapValues { entry ->
-                entry.value.filter { it.type.not() }
-            }
-        }
-        val listCapitalAnalyticsView = mutableListOf<CapitalAnalyticsView>()
-        val categories = categoriesService.findByUserUID(userUID)
-            .filter { (it.name in listOf("Продажа актива", "Покупка актива")).not() }
-        groupListAssetInformation.forEach { entryByMonth ->
-            var expense = 0.0
-            var income = 0.0
-            var flagIncome = false
-            transactionsBudget[entryByMonth.key]?.forEach { entryTransaction ->
-                val category = categories.find { it.id == entryTransaction.key } ?: return@forEach
-                when (category.type) {
-                    true -> {
-                        income += entryTransaction.value.sumOf { it.amount }
-                        flagIncome = true
-                    }
+        listAssetInformation.sortBy { YearMonth.parse(it.date, DateTimeFormatter.ofPattern("dd.MM.yyyy")) }
 
-                    false -> expense += entryTransaction.value.sumOf { it.amount }
+        val mapTransactions = mutableMapOf<String, MutableMap<Long, List<TransactionView>>>()
+        getGroupTransactions(userUID).forEach { entry ->
+            val mapByCategory = mutableMapOf<Long, List<TransactionView>>()
+            entry.value.forEach { transactionByCategory ->
+                val listTransactions = mutableListOf<TransactionView>()
+                transactionByCategory.value.forEach { transaction ->
+                    listTransactions.add(transaction)
+//                    if (transaction.type.not()) listTransactions.add(transaction)
+                }
+                mapByCategory[transactionByCategory.key] = listTransactions
+            }
+            if (mapByCategory.isNotEmpty()) mapTransactions[entry.key] = mapByCategory
+        }
+        println(mapTransactions)
+        val resultList = mutableListOf<CapitalAnalyticsView>()
+        println("######################################")
+        var fiat = 0L
+        var startMonth = if (mapTransactions.isEmpty()) {
+            YearMonth.parse(listAssetInformation.first().date, DateTimeFormatter.ofPattern("dd.MM.yyyy"))
+        } else {
+            minOf(
+                YearMonth.parse(listAssetInformation.first().date, DateTimeFormatter.ofPattern("dd.MM.yyyy")),
+                mapTransactions.keys.minOf { YearMonth.parse(it, DateTimeFormatter.ofPattern("MM.yyyy")) })
+        }
+        val finishMonth = if (mapTransactions.isEmpty()) {
+            YearMonth.parse(listAssetInformation.last().date, DateTimeFormatter.ofPattern("dd.MM.yyyy"))
+        } else {
+            maxOf(
+                YearMonth.parse(listAssetInformation.last().date, DateTimeFormatter.ofPattern("dd.MM.yyyy")),
+                mapTransactions.keys.maxOf { YearMonth.parse(it, DateTimeFormatter.ofPattern("MM.yyy")) })
+        }
+        while (startMonth.isBefore(finishMonth.plusMonths(1))) {
+            val mapAsset = mutableMapOf<Long, CapitalAnalyticsView.AssetAnalyticsView>()
+            println(startMonth)
+            var incomeUsual = 0L
+            var expenseUsual = 0L
+            var incomeLarge = 0L
+            var expenseLarge = 0L
+            val nowMonth = "${
+                startMonth.monthValue.let {
+                    if (it < 10) "0$it" else it
+                }
+            }.${startMonth.year}"
+            if (nowMonth in mapTransactions.keys) {
+                mapTransactions[nowMonth]!!.forEach { entry ->
+                    when (categories.find { it.id == entry.key }?.type) {
+                        true -> {
+                            entry.value.forEach { transaction ->
+                                if (transaction.type) incomeLarge += transaction.amount
+                                else incomeUsual += transaction.amount
+                            }
+                        }
+
+                        false -> {
+                            entry.value.forEach { transaction ->
+                                if (transaction.type) expenseLarge += transaction.amount
+                                else expenseUsual += transaction.amount
+                            }
+                        }
+
+                        null -> {}
+                    }
                 }
             }
-            if (flagIncome.not()) income = 1.0
-            listCapitalAnalyticsView.add(
-                CapitalAnalyticsView(
-                    month = entryByMonth.key,
-                    saveRate = (10_000.0 * (income - expense) / income).toLong().toDouble() / 100.0,
-                    listAsset = entryByMonth.value.map { entryByAsset ->
-                        val price = entryByAsset.value.filter { it.typeInformation == "price" }
-                            .maxWith(compareBy<AssetInformationView> {
-                                LocalDate.parse(it.date, DateTimeFormatter.ofPattern("dd.MM.yyyy"))
-                            }.thenBy { it.currentPrice ?: 0 })
-                        val transaction = entryByAsset.value.filter { it.typeInformation == "transaction" }.filter {
-                            SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).parse(it.date).after(
-                                SimpleDateFormat("dd.MM.yyyy").parse(price.date)
+            fiat += incomeUsual + incomeLarge - expenseUsual - expenseLarge
+            val assetFiat = assets.find { it.title == "Фиат" }!!
+            println(assetFiat)
+            mapAsset[assetFiat.id] = CapitalAnalyticsView.AssetAnalyticsView(
+                id = assetFiat.id,
+                title = assetFiat.title,
+                amount = fiat
+            )
+            println(mapAsset)
+            listAssetInformation.groupBy { it.assetId }.forEach { entry ->
+                if (entry.key != assetFiat.id) {
+                    val price = entry.value.filter { it.typeInformation == "price" }.firstOrNull {
+                        if (YearMonth.parse(
+                                it.date,
+                                DateTimeFormatter.ofPattern("dd.MM.yyyy")
+                            ) == startMonth
+                        ) true
+                        else if (YearMonth.parse(it.date, DateTimeFormatter.ofPattern("dd.MM.yyyy"))
+                                .isBefore(startMonth)
+                        ) true
+                        else false
+                    }
+                    val amount: Long
+                    if (price != null) {
+                        val transaction = entry.value.filter { it.typeInformation == "transaction" }.filter {
+                            val dateTransaction = YearMonth.parse(
+                                it.date,
+                                DateTimeFormatter.ofPattern("dd.MM.yyyy")
                             )
-                        }.groupBy { it.isSale }
-                        CapitalAnalyticsView.AssetAnalyticsView(
-                            id = entryByAsset.key,
-                            title = assets.find { it.id == entryByAsset.key }?.title ?: "No title",
-                            amount = (price.currentPrice ?: 0) + (transaction[false]?.sumOf { it.amount ?: 0 }
-                                ?: 0) - (transaction[true]?.sumOf { it.amount ?: 0 } ?: 0),
-                        )
+                            (dateTransaction == startMonth || dateTransaction.isBefore(startMonth)) && LocalDate.parse(
+                                it.date,
+                                DateTimeFormatter.ofPattern("dd.MM.yyyy")
+                            ).isAfter(LocalDate.parse(price.date, DateTimeFormatter.ofPattern("dd.MM.yyyy")))
+                        }
+                        amount = transaction.sumOf {
+                            if (it.isSale!!) (-1) * it.amount!!
+                            else it.amount!!
+                        } + price.currentPrice!!
+                    } else {
+                        val transaction = entry.value.filter { it.typeInformation == "transaction" }.filter {
+                            val dateTransaction = YearMonth.parse(
+                                it.date,
+                                DateTimeFormatter.ofPattern("dd.MM.yyyy")
+                            )
+                            dateTransaction == startMonth || dateTransaction.isBefore(startMonth)
+                        }
+                        amount = if (transaction.isEmpty()) {
+                            0
+                        } else {
+                            transaction.sumOf {
+                                if (it.isSale!!) (-1) * it.amount!!
+                                else it.amount!!
+                            }
+                        }
+                    }
+                    mapAsset[entry.key] = CapitalAnalyticsView.AssetAnalyticsView(
+                        id = entry.key,
+                        title = assets.find { it.id == entry.key }?.title ?: "Not title",
+                        amount = amount
+                    )
+                }
+            }
+            resultList.add(
+                CapitalAnalyticsView(
+                    month = nowMonth,
+                    saveRate = if (incomeUsual == 0L && expenseUsual == 0L) {
+                        0.0
+                    } else if (incomeUsual == 0L) {
+                        -100.0
+                    } else {
+                        100.0 * (incomeUsual - expenseUsual).toDouble() / (incomeUsual.toDouble())
+                    },
+                    listAsset = mapAsset.map { entry ->
+                        entry.value
                     }
                 ))
+            startMonth = startMonth.plusMonths(1)
         }
-        return listCapitalAnalyticsView
+        return resultList
     }
 
     private fun getGroupTransactions(userUID: UUID) = transactionService.findByUserUID(userUID).groupBy { transaction ->

@@ -45,7 +45,7 @@ class AssetInformationServiceImplementation(
                     }.id,
                     amount = assetTransactionView.amount,
                     date = assetTransactionView.date,
-                    type = assetTransactionView.isSale,
+                    type = false,
                     description = when (assetTransactionView.isSale) {
                         true -> "Продажа актива: ${asset.title}"
                         false -> "Покупка актива: ${asset.title}"
