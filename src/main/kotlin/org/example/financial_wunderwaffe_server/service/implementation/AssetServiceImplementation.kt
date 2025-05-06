@@ -63,7 +63,7 @@ class AssetServiceImplementation(
             assetPriceRepository.save(
                 AssetPriceEntity(
                     asset = asset,
-                    date = LocalDate.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")),
+                    date = "01.01.1900",
                     oldPrice = 0,
                     currentPrice = 0
                 )

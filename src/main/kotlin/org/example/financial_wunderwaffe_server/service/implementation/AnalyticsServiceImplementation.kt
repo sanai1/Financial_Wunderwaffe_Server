@@ -67,15 +67,12 @@ class AnalyticsServiceImplementation(
                 val listTransactions = mutableListOf<TransactionView>()
                 transactionByCategory.value.forEach { transaction ->
                     listTransactions.add(transaction)
-//                    if (transaction.type.not()) listTransactions.add(transaction)
                 }
                 mapByCategory[transactionByCategory.key] = listTransactions
             }
             if (mapByCategory.isNotEmpty()) mapTransactions[entry.key] = mapByCategory
         }
-        println(mapTransactions)
         val resultList = mutableListOf<CapitalAnalyticsView>()
-        println("######################################")
         var fiat = 0L
         var startMonth = if (mapTransactions.isEmpty()) {
             YearMonth.parse(listAssetInformation.first().date, DateTimeFormatter.ofPattern("dd.MM.yyyy"))
@@ -93,7 +90,6 @@ class AnalyticsServiceImplementation(
         }
         while (startMonth.isBefore(finishMonth.plusMonths(1))) {
             val mapAsset = mutableMapOf<Long, CapitalAnalyticsView.AssetAnalyticsView>()
-            println(startMonth)
             var incomeUsual = 0L
             var expenseUsual = 0L
             var incomeLarge = 0L
@@ -126,13 +122,11 @@ class AnalyticsServiceImplementation(
             }
             fiat += incomeUsual + incomeLarge - expenseUsual - expenseLarge
             val assetFiat = assets.find { it.title == "Фиат" }!!
-            println(assetFiat)
             mapAsset[assetFiat.id] = CapitalAnalyticsView.AssetAnalyticsView(
                 id = assetFiat.id,
                 title = assetFiat.title,
                 amount = fiat
             )
-            println(mapAsset)
             listAssetInformation.groupBy { it.assetId }.forEach { entry ->
                 if (entry.key != assetFiat.id) {
                     val price = entry.value.filter { it.typeInformation == "price" }.firstOrNull {
@@ -194,7 +188,7 @@ class AnalyticsServiceImplementation(
                     } else if (incomeUsual == 0L) {
                         -100.0
                     } else {
-                        100.0 * (incomeUsual - expenseUsual).toDouble() / (incomeUsual.toDouble())
+                        100.0 * (incomeUsual - expenseUsual).toDouble() / incomeUsual.toDouble()
                     },
                     listAsset = mapAsset.map { entry ->
                         entry.value

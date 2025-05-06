@@ -74,17 +74,19 @@ class AssetInformationServiceImplementation(
             )
         }
         listAssetTransaction.forEach {
-            listAssetInformationView.add(
-                AssetInformationView(
-                    assetId = it.asset.id,
-                    typeInformation = "transaction",
-                    date = it.date,
-                    amount = it.amount,
-                    isSale = it.isSale,
-                    oldPrice = null,
-                    currentPrice = null
+            if (it.date != "01.01.1900") {
+                listAssetInformationView.add(
+                    AssetInformationView(
+                        assetId = it.asset.id,
+                        typeInformation = "transaction",
+                        date = it.date,
+                        amount = it.amount,
+                        isSale = it.isSale,
+                        oldPrice = null,
+                        currentPrice = null
+                    )
                 )
-            )
+            }
         }
         return listAssetInformationView.map {
             it to SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).parse(it.date)
